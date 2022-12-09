@@ -1,0 +1,92 @@
+import tkinter
+from tkinter import*
+from tkinter import messagebox
+import pygame,sys
+from pygame.locals import*
+
+alto = 700
+ancho = 1106
+
+pygame.init()
+
+pygame.mixer.init()
+pygame.mixer.music.load("musciakids.mp3")
+pygame.mixer.music.set_volume(.2)
+pygame.mixer.music.play(900)
+
+root = pygame.display.set_mode((ancho,alto))
+pygame.display.set_caption("¡Contemos!")
+ico = pygame.image.load("gato.ico")
+pygame.display.set_icon(ico)
+
+naranja = pygame.Color(212,139,11)
+#pygame.draw.circle(root,naranja,(200,200),100)
+#pygame.draw.rect(root,naranja,(1,1,150,100))
+#pygame.draw.polygon(root,naranja,((80,90),(150,40),(220,90),(180,150),(120,150)))
+
+logo = pygame.image.load("Contemos_log.png")
+fond = pygame.image.load("background.png")
+root.blit(fond,(0,0))
+
+Fuente = pygame.font.SysFont("Arial",30)
+
+vel = 1
+posx = 75
+posy = 497
+derech = True
+
+class gatoSalto(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.gato = pygame.image.load("GatosSprites/Gato1/g1_stand.png")
+
+        self.rect = self.gato.get_rect()
+        self.rect.centerx = ancho/2
+        self.rect.centery = alto-30
+
+        self.gatoSalto = []
+        self.vidas = True
+
+    def dibujar(self,ventana):
+        ventana.blit(self.gato,self.rect)
+
+def juegomain():
+    global vel,posy,posx,derech
+
+
+    jugador = gatoSalto()
+    while True:
+        root.blit(fond,(0,0))
+        root.blit(logo,(24,-20))
+        #root.blit(fig,(posx,posy))
+
+        #tiempo = pygame.time.get_ticks()/1000
+
+        for evento in pygame.event.get():
+            if evento.type == QUIT:
+                pygame.quit()
+                sys.exit()
+        #if derech == True:
+        #    if posx < 900:
+        #        posx+=vel
+        #    else:
+        #        derech=False
+        #else:
+        #    if posx > 70:
+        #        posx-=vel
+        #    else:
+        #        derech=True
+            #elif evento.type == pygame.KEYDOWN:
+            #    if evento.key == K_LEFT:
+            #        posx -= vel
+            #    elif evento.key == K_RIGHT:
+            #        posx += vel
+            #elif evento.type == pygame.KEYUP:
+            #    if evento.key == K_LEFT:
+            #        print("Presionaste LEFT")
+            #    elif evento.key == K_RIGHT:
+            #        print("Presionaste RIGHT")
+        jugador.dibujar(root)
+        pygame.display.update()
+
+juegomain()
