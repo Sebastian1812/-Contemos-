@@ -1,0 +1,195 @@
+#include <iostream>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_native_dialog.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+#include <string>
+#include <Windows.h>
+
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue);
+void tiempo(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT evento, int segfin);
+
+using namespace std;
+
+
+void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue)
+{
+	cout << "Presionaste JUGAR\n";
+	while (true)
+	{
+		ALLEGRO_EVENT evento;
+		al_wait_for_event(queue, &evento);
+		al_clear_to_color(negro);
+		al_draw_bitmap(fondo_juego, 0, 0, 0);
+		al_flip_display();
+	}
+}
+
+void tiempo(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT evento, int segfin)
+{
+	ALLEGRO_TIMER* segundoTimer = al_create_timer(1.0);
+	int segundo = 0;
+	al_register_event_source(queue, al_get_timer_event_source(segundoTimer));
+	al_start_timer(segundoTimer);
+	al_stop_timer(segundoTimer);
+	while (segundo < segfin)
+	{
+		if (evento.type == ALLEGRO_EVENT_TIMER)
+		{
+			if (evento.timer.source == segundoTimer)
+			{
+				segundo++;
+				printf("%d\n", segundo);
+				if (segundo == 10)
+				{
+					al_stop_timer(segundoTimer);
+					al_start_timer(segundoTimer);
+					segundo = 0;
+				}
+			}
+		}
+	}
+	
+}
+
+int main()
+{
+	if (!al_init())
+	{
+		al_show_native_message_box(NULL, "ERROR CRITICO", "ERROR:404", "No se pudo cargar correctamente", NULL, ALLEGRO_MESSAGEBOX_ERROR);
+		return -1;
+	}
+	al_init_font_addon();
+	al_init_ttf_addon();
+	al_init_primitives_addon();
+	al_init_image_addon();
+	al_install_mouse();
+	al_install_keyboard();
+
+
+	bool end_program = true;
+	int alto = 700, ancho = 1106;
+	int segundo = 0;
+	//int countFPS = 0;
+	int x = -1, y = -1;
+
+	ALLEGRO_DISPLAY* ventana = al_create_display(ancho, alto);
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
+	ALLEGRO_FONT* GAN = al_load_font("Fuentes/Golden Age Shad.ttf", 70, 0);
+	ALLEGRO_FONT* GANbot = al_load_font("Fuentes/Golden Age Shad.ttf", 35, 0);
+
+	int ancho_W = GetSystemMetrics(SM_CXSCREEN);
+	int alto_W = GetSystemMetrics(SM_CYSCREEN);
+
+	ALLEGRO_BITMAP* menu_null = al_load_bitmap("Imagenes/Fondo/background.png");
+	ALLEGRO_BITMAP* menu_start = al_load_bitmap("Imagenes/Fondo/background_jugar.png");
+	ALLEGRO_BITMAP* menu_start_1 = al_load_bitmap("Imagenes/Fondo/background_jugar_1.png");
+	ALLEGRO_BITMAP* menu_exit = al_load_bitmap("Imagenes/Fondo/background_salir.png");
+	ALLEGRO_BITMAP* menu_exit_1 = al_load_bitmap("Imagenes/Fondo/background_salir_1.png");
+	ALLEGRO_BITMAP* fondo_juego = al_load_bitmap("Imagenes/Fondo/bg_fondcaja.png");
+	ALLEGRO_BITMAP* gato_sp1 = al_load_bitmap("Imagenes/Gato/G1/g1_air.png");
+
+	
+	//ALLEGRO_TIMER* fps = al_create_timer(1.0 / 30);
+
+	al_set_window_title(ventana, "Contemos!");
+
+	al_set_window_position(ventana, ancho_W / 2 - ancho / 2, alto_W / 2 - alto / 2);
+
+	ALLEGRO_COLOR blanco = al_map_rgb(255, 255, 255);
+	ALLEGRO_COLOR negro = al_map_rgb(0, 0, 0);
+	ALLEGRO_COLOR rojo = al_map_rgb(255, 0, 0);
+
+	
+	//al_register_event_source(queue, al_get_timer_event_source(fps));
+	al_register_event_source(queue, al_get_mouse_event_source());
+	al_register_event_source(queue, al_get_keyboard_event_source());
+
+	//al_start_timer(fps);
+
+	
+
+	while (end_program == true)
+	{
+		ALLEGRO_EVENT evento;
+		al_wait_for_event(queue, &evento);
+		al_clear_to_color(negro);
+
+
+
+		if (evento.type == ALLEGRO_EVENT_MOUSE_AXES || evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+		{
+			x = evento.mouse.x;
+			y = evento.mouse.y;
+
+			if (x >= 704 && x <= 976 && y >= 398 && y <= 475)
+			{
+				al_draw_bitmap(menu_start_1, 0, 0, 0);
+				if (evento.mouse.button & 1)
+				{
+					al_draw_bitmap(menu_start, 0, 0, 0);
+					jugar(negro, fondo_juego, queue);
+					
+				}
+				else
+				{
+					al_draw_bitmap(menu_start_1, 0, 0, 0);
+				}
+			}
+			else
+			{
+				if (x >= 704 && x <= 976 && y >= 529 && y <= 607)
+				{
+					al_draw_bitmap(menu_exit_1, 0, 0, 0);
+					if (evento.mouse.button & 1)
+					{
+						al_draw_bitmap(menu_exit, 0, 0, 0);
+						cout << "Presionaste SALIR\n";
+						end_program = false;
+					}
+					else
+					{
+						al_draw_bitmap(menu_exit_1, 0, 0, 0);
+					}
+				}
+				else
+				{
+					al_draw_bitmap(menu_null, 0, 0, 0);
+				}
+			}
+
+
+		}
+		else
+		{
+			al_draw_bitmap(menu_null, 0, 0, 0);
+		}
+		
+
+		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (evento.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_DOWN:
+				cout << "presionaste abajo\n";
+				break;
+			case ALLEGRO_KEY_UP:
+				cout << "presionaste arriba\n";
+				break;
+			case ALLEGRO_KEY_ENTER:
+			case ALLEGRO_KEY_PAD_ENTER:
+				cout << "presionaste enter\n";
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		al_flip_display();
+	}
+
+	return 0;
+}
