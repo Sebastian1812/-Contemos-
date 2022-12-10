@@ -1,15 +1,25 @@
+//	PROYECTO_FINAL_VIDEOJUEGO_CONTEMOS
+//	REALIZAR UN VIDEOJUEGO LÚDICO QUE CONSISTE EN RESOLVER PROBLEMAS MATEMÁTICOS CONTANDO CON UN GATO
+//	368327			Estefania Tello Mendoza
+//	368366			Sebastian Jimenez Rojas
+//	15/12/2022
+
 #include <iostream>
+#include <Windows.h>
+#include <sstream>
+
 #include <allegro5/allegro.h>
-#include <stdlib.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
-#include <string>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
-#include <Windows.h>
-#include <sstream>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+
+#include <stdlib.h>
+#include <string>
 #include <time.h>
 
 #include "Fanny_Sebas.h" 
@@ -22,6 +32,9 @@ using namespace std;
 
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
+	srand(time(NULL));
+	
+
 	ALLEGRO_BITMAP* buffer = al_load_bitmap("Imagenes/Fondo/bg_fondcaja.png");
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
@@ -53,7 +66,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 	{
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(evento_queue, &eventos);
-		
+
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
 			switch (eventos.keyboard.keycode)
@@ -102,11 +115,11 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 				}
 			}
 			dibujo = true;
-			
+
 		}
 		if (dibujo)
 		{
-			numeros(4);
+			//numeros(4);
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
 			al_draw_bitmap(buffer, 0, 0, 0);
@@ -180,6 +193,8 @@ int main()
 	al_init_image_addon();
 	al_install_mouse();
 	al_install_keyboard();
+	al_install_audio();
+	al_init_acodec_addon();
 
 
 	bool end_program = true;
@@ -187,6 +202,16 @@ int main()
 	int segundo = 0;
 	//int countFPS = 0;
 	int x = -1, y = -1;
+
+	al_reserve_samples(1);
+
+	ALLEGRO_SAMPLE* soundEffect = al_load_sample("Musica/boton.wav");
+	ALLEGRO_SAMPLE* song = al_load_sample("Musica/musciakids.mp3");
+
+	ALLEGRO_SAMPLE_INSTANCE* songInstance = al_create_sample_instance(song);
+	al_set_sample_instance_playmode(songInstance, ALLEGRO_PLAYMODE_LOOP);
+	al_attach_sample_instance_to_mixer(songInstance, al_get_default_mixer());
+
 
 	ALLEGRO_DISPLAY* ventana = al_create_display(ancho, alto);
 	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
@@ -220,7 +245,7 @@ int main()
 
 	//al_start_timer(fps);
 
-
+	al_play_sample_instance(songInstance);
 
 	while (end_program == true)
 	{
@@ -241,6 +266,7 @@ int main()
 				if (evento.mouse.button & 1)
 				{
 					al_draw_bitmap(menu_start, 0, 0, 0);
+					al_play_sample(soundEffect, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, 0);
 					jugar(negro, fondo_juego, queue, ventana);
 
 				}
@@ -253,6 +279,7 @@ int main()
 			{
 				if (x >= 704 && x <= 976 && y >= 529 && y <= 607)
 				{
+
 					al_draw_bitmap(menu_exit_1, 0, 0, 0);
 					if (evento.mouse.button & 1)
 					{
@@ -301,6 +328,9 @@ int main()
 
 		al_flip_display();
 	}
+
+	al_destroy_sample(soundEffect);
+	al_destroy_sample_instance(songInstance);
 
 	return 0;
 }
