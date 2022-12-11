@@ -22,36 +22,55 @@
 #include <string>
 #include <time.h>
 
-#include "Fanny_Sebas.h" 
+
+//#include "Fanny_Sebas.h" 
 
 void jugar(ALLEGRO_COLOR negro, ALLEGRO_BITMAP* fondo_juego, ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_DISPLAY* ventana);
 void tiempo(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT evento, int segfin);
 void usarTeclado(ALLEGRO_DISPLAY* ventana);
+void numeros(int n1, int n2);
 
 using namespace std;
+
+void numeros(int n1, int n2)
+{
+	ALLEGRO_FONT* Golden_Age_Shad;
+	ALLEGRO_COLOR azul = al_map_rgb(53, 43, 255);
+	Golden_Age_Shad = al_load_font("Fuentes/Golden Age Shad.ttf", 80, 0);
+	al_draw_text(Golden_Age_Shad, azul, 185, 275, NULL, (to_string(n1)).c_str());
+	al_draw_text(Golden_Age_Shad, azul, 520, 275, NULL, (to_string(n2)).c_str());
+}
 
 void usarTeclado(ALLEGRO_DISPLAY* ventana)
 {
 	srand(time(NULL));
 	
 
-	ALLEGRO_BITMAP* buffer = al_load_bitmap("Imagenes/Fondo/bg_fondcaja.png");
 	ALLEGRO_TIMER* tiempo = al_create_timer(1.0 / 5);
 	ALLEGRO_EVENT_QUEUE* evento_queue = al_create_event_queue();
 	ALLEGRO_BITMAP* caminando[8];
+	ALLEGRO_BITMAP* fondo[2];
 	ALLEGRO_KEYBOARD_STATE keyState;
 
 	al_register_event_source(evento_queue, al_get_keyboard_event_source());
 	al_register_event_source(evento_queue, al_get_timer_event_source(tiempo));
 	al_get_keyboard_state(&keyState);
+	//no declarar variables antes del tiempo
 	al_start_timer(tiempo);
 
 	bool terminado = false, dibujo = true, activo = false;
-	int x = 24, y = 460;
+	int x = 24, y = 460, xbackground;
+	xbackground = x;
 	int velMovimiento = 183;
-	int i, indice, dirPrevia;
-	indice = 0, dirPrevia = 0;
+	int i, j, indice, resultado;
+	indice = 0, j = 0;
 	float camaraPos[2] = { 0,0 };
+	int n1, n2;
+	int rf = 5;
+	n1 = rand() % rf + 1;
+	n2 = rand() % rf + 1;
+	resultado = n1 + n2;
+	numeros(n1, n2);
 
 
 	for (i = 0; i < 8; i++)
@@ -61,6 +80,13 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		caminando[i] = al_load_bitmap(str.str().c_str());
 	}
 
+	for (j = 0; j < 2; j++)
+	{
+		std::stringstream str;
+		str << "Imagenes/Fondo/juego/" << j + 1 << ".png";
+		fondo[j] = al_load_bitmap(str.str().c_str());
+	}
+	j = 0;
 
 	while (!terminado)
 	{
@@ -73,13 +99,33 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 			{
 			case ALLEGRO_KEY_RIGHT:
 				x += velMovimiento;
+				xbackground += velMovimiento;
 				if (x >= 1100)
 				{
 					x = 24;
 				}
+				if (xbackground < 1100)
+				{
+					j = 0;
+					
+				}
+				else
+				{
+					j = 1;
+					if (xbackground > 2200)
+					{
+						j = 0;
+						xbackground = 24;
+					}
+				}
 				break;
 			case ALLEGRO_KEY_LEFT:
 				x -= velMovimiento;
+				xbackground -= velMovimiento;
+				if (x < 24)
+				{
+					x = 24;
+				}
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				terminado = true;
@@ -119,10 +165,10 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		}
 		if (dibujo)
 		{
-			//numeros(4);
+			numeros(n1,n2);
 			al_draw_bitmap(caminando[indice], x, y, NULL);
 			al_flip_display();
-			al_draw_bitmap(buffer, 0, 0, 0);
+			al_draw_bitmap(fondo[j], 0, 0, 0);
 			//al_clear_to_color(negro);
 		}
 	}
@@ -132,7 +178,7 @@ void usarTeclado(ALLEGRO_DISPLAY* ventana)
 		al_destroy_bitmap(caminando[i]);
 	}
 	al_destroy_event_queue(evento_queue);
-	al_destroy_bitmap(buffer);
+	al_destroy_bitmap(fondo[j]);
 
 
 	cout << "Presionaste JUGAR HAHAHAHAHAHAHHAHAHA\n";
@@ -284,6 +330,7 @@ int main()
 					if (evento.mouse.button & 1)
 					{
 						al_draw_bitmap(menu_exit, 0, 0, 0);
+						al_play_sample(soundEffect, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, 0);
 						cout << "Presionaste SALIR\n";
 						end_program = false;
 					}
@@ -303,27 +350,6 @@ int main()
 		else
 		{
 			al_draw_bitmap(menu_null, 0, 0, 0);
-		}
-
-
-		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
-		{
-			switch (evento.keyboard.keycode)
-			{
-			case ALLEGRO_KEY_DOWN:
-				cout << "presionaste abajo\n";
-				break;
-			case ALLEGRO_KEY_UP:
-				cout << "presionaste arriba\n";
-				break;
-			case ALLEGRO_KEY_ENTER:
-			case ALLEGRO_KEY_PAD_ENTER:
-				cout << "presionaste enter\n";
-				break;
-
-			default:
-				break;
-			}
 		}
 
 		al_flip_display();
