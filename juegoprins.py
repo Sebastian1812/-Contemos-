@@ -1,33 +1,30 @@
 import sys
-from random import*
 from FS_button import *
 from FS_player import*
 
-pygame.init()
+init()
 
 #M U S I C A  Y  S O N I D O
-pygame.mixer.init()
-pygame.mixer.music.load("Musica/musciakids.mp3")
-pygame.mixer.music.set_volume(.2)
-pygame.mixer.music.play(900)
-soundbot = pygame.mixer.Sound("Musica/boton.wav")
+mixer.init()
+mixer.music.load("Musica/musciakids.mp3")
+mixer.music.set_volume(.2)
+mixer.music.play(900)
+soundbot = mixer.Sound("Musica/boton.wav")
 
 #V E N T A N A
 alto = 700
 ancho = 1106
-root = pygame.display.set_mode((ancho, alto))
-pygame.display.set_caption("¡Contemos!")
-ico = pygame.image.load("gato.ico")
-pygame.display.set_icon(ico)
+root = display.set_mode((ancho, alto))
+display.set_caption("¡Contemos!")
+ico = image.load("gato.ico")
+display.set_icon(ico)
 
 #C O L O R E S
-naranja = pygame.Color(212, 139, 11)
-negro = pygame.Color(0, 0, 0)
+naranja = Color(212, 139, 11)
+negro = Color(0, 0, 0)
 
 #F U E N T E S
-Fuente = pygame.font.SysFont("Fuentes/Golden Age Shad", 100)
-font1 = pygame.font.SysFont('Fuentes/Golden Age Shad', 72)
-
+font1 = font.SysFont('Fuentes/Golden Age Shad', 72)
 
 #I M A G E N E S
 logo = image.load("Imagenes/Contemos_log.png")
@@ -54,50 +51,42 @@ pause_button = Button(10, 119, b_pausa[0], b_pausa[1], b_pausa[2])
 
 #V A R I A B L E S
     #Enteros
-x = -60
-y = 400
+x = 20
+y = 380
     #Booleanos
 game_start = False
 game = True
     #Otros
-clock = pygame.time.Clock()
+clock = time.Clock()
 player = Gato((x, y), x)
 
 
 def imprinNum(saltjugador):
 
-    i = 6*saltjugador
+    i = 5*saltjugador
 
-    txt1=[font1.render(str(i-5),0,negro),
-          font1.render(str(i-4),0,negro),
-          font1.render(str(i-3),0,negro),
-          font1.render(str(i-2),0,negro),
-          font1.render(str(i-1),0,negro),
-          font1.render(str(i),0,negro)]
+    txt1=[font1.render(str(i-4), 0, negro),
+          font1.render(str(i-3), 0, negro),
+          font1.render(str(i-2), 0, negro),
+          font1.render(str(i-1), 0, negro),
+          font1.render(str(i), 0, negro)]
 
-    root.blit(txt1[0], (67, 617))
-    root.blit(txt1[1], (250, 617))
-    root.blit(txt1[2], (437, 617))
-    root.blit(txt1[3], (630, 617))
-    root.blit(txt1[4], (810, 617))
-    root.blit(txt1[5], (985, 617))
+    root.blit(txt1[0], (130, 617))
+    root.blit(txt1[1], (330, 617))
+    root.blit(txt1[2], (530, 617))
+    root.blit(txt1[3], (730, 617))
+    root.blit(txt1[4], (930, 617))
 
 
 
 
 def juegomain(evento):
 
-    saltjugador = player.handle_event(evento, x)
+    saltjugador = player.handle_event(root, fond_prins, evento, x)
 
     if pause_button.draw(root, soundbot):
         pass
-    if saltjugador%2 != 0:
-        root.blit(fond_prins[0], (0, 0))
-        imprinNum(saltjugador)
-
-    else:
-        root.blit(fond_prins[1], (0, 0))
-        imprinNum(saltjugador)
+    imprinNum(saltjugador)
     root.blit(life_bar[3], (588, 10))
     root.blit(player.image, player.rect)
 
@@ -112,7 +101,7 @@ def juegomenu():
         root.blit(logo, (24, -20))
 
         for evento in event.get():
-            if evento.type == pygame.QUIT:
+            if evento.type == QUIT:
                 game = False
 
         if game_start:
@@ -127,7 +116,7 @@ def juegomenu():
                 quit()
                 exit()
 
-        pygame.display.update()
+        display.update()
         #pygame.display.flip()
 
 juegomenu()
