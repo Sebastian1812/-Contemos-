@@ -1,6 +1,6 @@
 from pygame import*
 
-bg = 0
+bg = 1
 xbackground = 24
 
 class Gato(sprite.Sprite):
@@ -21,6 +21,7 @@ class Gato(sprite.Sprite):
                              5: (0, 0, 280, 200),
                              6: (295, 0, 202, 200),
                              7: (581, 0, 210, 200)}
+        self.buton = False
 
     def get_frame(self, frame_set):
         self.frame += 1
@@ -37,27 +38,22 @@ class Gato(sprite.Sprite):
 
     def handle_event(self, evento, x):
         global xbackground, bg
-
-        if evento.type == KEYDOWN:
+        if evento.type == KEYDOWN and self.buton == False:
+            self.buton = True
             if evento.key == K_RIGHT:
                 self.clip(self.right_states)
                 self.rect.x += 183
                 xbackground += 183
                 if self.rect.x >= 946:
                     self.rect.x = x
-                if xbackground < 946:
-                    bg = 0
-                    print("SIGUE CERO")
-                else:
-                    print("CAMBIO")
-                    bg = 1
-                    if xbackground > 2076:
-                        bg = 0
-                        xbackground = x
-                print(xbackground)
+                if xbackground >= 946:
+                    bg += 1
+                    xbackground = x
+
             if evento.key == K_ESCAPE:
                 quit()
                 exit()
+
 
             """elif evento.key == pygame.K_LEFT:
                 self.clip(self.right_states)
@@ -68,10 +64,10 @@ class Gato(sprite.Sprite):
 
             #print(self.rect.x)
 
-
         if evento.type == KEYUP:
             if evento.key == K_RIGHT:
                 self.clip(self.right_states[0])
+                self.buton = False
             """elif evento.key == pygame.K_LEFT:
                 self.clip(self.right_states[0])"""
 

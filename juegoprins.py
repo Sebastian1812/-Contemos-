@@ -1,4 +1,5 @@
 import sys
+from random import*
 from FS_button import *
 from FS_player import*
 
@@ -24,8 +25,8 @@ naranja = pygame.Color(212, 139, 11)
 negro = pygame.Color(0, 0, 0)
 
 #F U E N T E S
-Fuente = pygame.font.SysFont("Fuentes/Golden Age Shad.ttf", 100)
-font1 = pygame.font.SysFont('Fuentes/Golden Age Shad.ttf', 72)
+Fuente = pygame.font.SysFont("Fuentes/Golden Age Shad", 100)
+font1 = pygame.font.SysFont('Fuentes/Golden Age Shad', 72)
 
 
 #I M A G E N E S
@@ -55,7 +56,6 @@ pause_button = Button(10, 119, b_pausa[0], b_pausa[1], b_pausa[2])
     #Enteros
 x = -60
 y = 400
-xbackground = x
     #Booleanos
 game_start = False
 game = True
@@ -64,16 +64,42 @@ clock = pygame.time.Clock()
 player = Gato((x, y), x)
 
 
+def imprinNum(saltjugador):
+
+    i = 6*saltjugador
+
+    txt1=[font1.render(str(i-5),0,negro),
+          font1.render(str(i-4),0,negro),
+          font1.render(str(i-3),0,negro),
+          font1.render(str(i-2),0,negro),
+          font1.render(str(i-1),0,negro),
+          font1.render(str(i),0,negro)]
+
+    root.blit(txt1[0], (67, 617))
+    root.blit(txt1[1], (250, 617))
+    root.blit(txt1[2], (437, 617))
+    root.blit(txt1[3], (630, 617))
+    root.blit(txt1[4], (810, 617))
+    root.blit(txt1[5], (985, 617))
+
+
+
+
 def juegomain(evento):
-    if player.handle_event(evento, x) == 0:
+
+    saltjugador = player.handle_event(evento, x)
+
+    if pause_button.draw(root, soundbot):
+        pass
+    if saltjugador%2 != 0:
         root.blit(fond_prins[0], (0, 0))
+        imprinNum(saltjugador)
 
     else:
         root.blit(fond_prins[1], (0, 0))
+        imprinNum(saltjugador)
     root.blit(life_bar[3], (588, 10))
     root.blit(player.image, player.rect)
-    if pause_button.draw(root, soundbot):
-        pass
 
     clock.tick(10)
 
@@ -98,8 +124,8 @@ def juegomenu():
                 print("Start")
 
             if sal_button.draw(root, soundbot):
-                pygame.quit()
-                sys.exit()
+                quit()
+                exit()
 
         pygame.display.update()
         #pygame.display.flip()
