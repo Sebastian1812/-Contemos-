@@ -1,7 +1,6 @@
 import sys
-import pygame.time
 from FS_button import *
-from FS_player import *
+from FS_player import*
 
 pygame.init()
 
@@ -54,38 +53,46 @@ pause_button = Button(10, 119, b_pausa[0], b_pausa[1], b_pausa[2])
 
 #V A R I A B L E S
     #Enteros
-vel = 183
-x = 24
-y = 460
+x = -60
+y = 400
+xbackground = x
     #Booleanos
-derech = True
 game_start = False
+game = True
     #Otros
-clock = pygame.time.Clock
-player = Gato((x, y))
+clock = pygame.time.Clock()
+player = Gato((x, y), x)
 
 
-def juegomain():
-    root.blit(fond_prins[0], (0, 0))
+def juegomain(evento):
+    if player.handle_event(evento, x) == 0:
+        root.blit(fond_prins[0], (0, 0))
+
+    else:
+        root.blit(fond_prins[1], (0, 0))
     root.blit(life_bar[3], (588, 10))
+    root.blit(player.image, player.rect)
     if pause_button.draw(root, soundbot):
         pass
 
+    clock.tick(10)
 
 def juegomenu():
-    global vel, posy, posx, derech, juegocontemos, game_start
+    global x,game, game_start
 
-    while True:
+    evento = event.get()
+    while game:
         root.blit(fond, (0, 0))
         root.blit(logo, (24, -20))
-        # root.blit(fig,(posx,posy))
-        # tiempo = pygame.time.get_ticks()/1000
+
+        for evento in event.get():
+            if evento.type == pygame.QUIT:
+                game = False
 
         if game_start:
-            juegomain()
+            juegomain(evento)
 
         else:
-
             if jug_button.draw(root, soundbot):
                 game_start = True
                 print("Start")
@@ -94,17 +101,7 @@ def juegomenu():
                 pygame.quit()
                 sys.exit()
 
-        for evento in pygame.event.get():
-            if evento.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
-        if evento.type == pygame.KEYDOWN:
-            if evento.key == K_ESCAPE:
-                pygame.quit()
-                sys.exit()
-
-
         pygame.display.update()
+        #pygame.display.flip()
 
 juegomenu()

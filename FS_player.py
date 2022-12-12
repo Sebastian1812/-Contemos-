@@ -1,28 +1,26 @@
-import pygame
+from pygame import*
 
+bg = 0
+xbackground = 24
 
-class Gato(pygame.sprite.Sprite):
-    def __init__(self, position):
+class Gato(sprite.Sprite):
+    def __init__(self, position, x):
         super().__init__()
-        self.sheet = pygame.image.load("Imagenes/Gato/spriteSheet.png")
-        self.sheet.set_clip(pygame.Rect(0, 0, 280, 200))
+        self.sheet = image.load("Imagenes/Gato/spriteSheet.png")
+        self.sheet.set_clip(Rect(830, 0, 254, 200))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
         self.rect.topleft = position
         self.frame = 0
-        self.right_states = {0: (0, 0, 280, 200),
-                             1: (295, 0, 202, 200),
-                             2: (581, 0, 210, 200),
-                             3: (830, 0, 254, 200),
-                             4: (1124, 0, 260, 200),
-                             5: (1410, 0, 250, 200),
-                             6: (1707, 0, 250, 200),
-                             7: (2015, 0, 227, 200)}
-
-
-
-
+        self.right_states = {0: (830, 0, 254, 200),
+                             1: (1124, 0, 260, 200),
+                             2: (1410, 0, 250, 200),
+                             3: (1707, 0, 250, 200),
+                             4: (2015, 0, 227, 200),
+                             5: (0, 0, 280, 200),
+                             6: (295, 0, 202, 200),
+                             7: (581, 0, 210, 200)}
 
     def get_frame(self, frame_set):
         self.frame += 1
@@ -32,30 +30,53 @@ class Gato(pygame.sprite.Sprite):
 
     def clip(self, clipped_rect):
         if type(clipped_rect) is dict:
-            self.sheet.set_clip(pygame.Rect(self.get_frame(clipped_rect)))
+            self.sheet.set_clip(Rect(self.get_frame(clipped_rect)))
         else:
-            self.sheet.set_clip(pygame.Rect(clipped_rect))
+            self.sheet.set_clip(Rect(clipped_rect))
         return clipped_rect
 
-    def update(self, direction):
-        if direction == 'left':
-            self.clip(self.left_states)
-            self.rect.x -= 5
-        if direction == 'right':
-            self.clip(self.right_states)
-            self.rect.x += 5
-        if direction == 'up':
-            self.clip(self.up_states)
-            self.rect.y -= 5
-        if direction == 'down':
-            self.clip(self.down_states)
-            self.rect.y += 5
+    def handle_event(self, evento, x):
+        global xbackground, bg
+
+        if evento.type == KEYDOWN:
+            if evento.key == K_RIGHT:
+                self.clip(self.right_states)
+                self.rect.x += 183
+                xbackground += 183
+                if self.rect.x >= 946:
+                    self.rect.x = x
+                if xbackground < 946:
+                    bg = 0
+                    print("SIGUE CERO")
+                else:
+                    print("CAMBIO")
+                    bg = 1
+                    if xbackground > 2076:
+                        bg = 0
+                        xbackground = x
+                print(xbackground)
+            if evento.key == K_ESCAPE:
+                quit()
+                exit()
+
+            """elif evento.key == pygame.K_LEFT:
+                self.clip(self.right_states)
+                self.rect.x -= 183
+                xbackground -= 183
+                if self.rect.x < x:
+                    self.rect.x = x"""
+
+            #print(self.rect.x)
 
 
-    def handle_event(self, evento):
-        if evento.type == pygame.KEYDOWN:
-            if evento.type == pygame.K_RIGHT:
-                self.update('right')
-        if evento.type == pygame.KEYUP:
-            if evento.type == pygame.K_RIGHT:
-                self.update('stand_right')
+        if evento.type == KEYUP:
+            if evento.key == K_RIGHT:
+                self.clip(self.right_states[0])
+            """elif evento.key == pygame.K_LEFT:
+                self.clip(self.right_states[0])"""
+
+        self.image = self.sheet.subsurface(self.sheet.get_clip())
+
+        return bg
+
+
