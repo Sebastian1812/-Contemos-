@@ -1,10 +1,12 @@
 from pygame import *
 from random import *
+from FS_button import *
 
 bg = 1
-xbackground = 24
+xbackground = 0
 n1 = 0
 n2 = 0
+xtotal = 0
 
 init()
 
@@ -15,7 +17,15 @@ negro = Color(0, 0, 0)
 # F U E N T E S
 font1 = font.SysFont('Fuentes/Golden Age Shad', 80)
 
-
+# I M A G E N E S
+life_bar = [image.load("Imagenes/Gato/Lifes/0.png"),
+            image.load("Imagenes/Gato/Lifes/1.png"),
+            image.load("Imagenes/Gato/Lifes/2.png"),
+            image.load("Imagenes/Gato/Lifes/3.png"),
+            image.load("Imagenes/Gato/Lifes/4.png"),
+            image.load("Imagenes/Gato/Lifes/5.png"),
+            image.load("Imagenes/Gato/Lifes/6.png"),
+            image.load("Imagenes/Gato/Lifes/7.png")]
 
 def resultado(n1, n2, resul):
     check = n1 + n2
@@ -39,6 +49,7 @@ class Gato(sprite.Sprite):
         self.rect.topleft = position
         self.resul = 1
         self.puntos = 0
+        self.vidas = 3
         self.problem = True
         self.frame = 0
         self.right_states = {0: (830, 0, 254, 200),
@@ -64,6 +75,19 @@ class Gato(sprite.Sprite):
             self.sheet.set_clip(Rect(clipped_rect))
         return clipped_rect
 
+
+    def retry(self, x, root):
+        global bg, xbackground
+        bg = 1
+        self.resul = 1
+        self.problem = True
+        self.rect.x = x
+        xbackground = x
+        self.puntos = 0
+        self.vidas -= 1
+        if self.vidas == 0:
+            self.vidas = 3
+
     def handle_event(self, root, f1, evento, x):
         global xbackground, bg, fond, n1, n2
 
@@ -72,6 +96,7 @@ class Gato(sprite.Sprite):
         else:
             root.blit(f1[1], (0, 0))
 
+        root.blit(life_bar[self.vidas], (588, 10))
 
         if self.problem:
             n1 = self.resul
@@ -79,9 +104,9 @@ class Gato(sprite.Sprite):
             self.problem = False
 
         # T E X T O S
-        txt=[font1.render(str(n1), 1, negro),
-             font1.render(str(n2), 1, negro),
-             font1.render(str(self.resul), 1, negro),]
+        txt = [font1.render(str(n1), 1, negro),
+               font1.render(str(n2), 1, negro),
+               font1.render(str(self.resul), 1, negro), ]
         points = font1.render(str(self.puntos), 1, negro)
 
         root.blit(txt[0], (270, 315))
@@ -89,19 +114,14 @@ class Gato(sprite.Sprite):
         root.blit(txt[2], (815, 315))
         root.blit(points, (200, 50))
 
-        print(f"{n1} y {n2}")
-
         if evento.type == KEYDOWN and self.buton == False:
             if evento.key == K_RETURN:
-                if resultado(n1,n2,self.resul):
+                if resultado(n1, n2, self.resul):
                     self.puntos += 10
                     self.problem = True
                 else:
-                    bg = 1
-                    self.resul = 1
-                    self.problem = True
-                    self.rect.x = x
-                    xbackground = x
+                    self.retry(x, root)
+
             if self.buton == False:
                 self.buton = True
                 if evento.key == K_RIGHT:
